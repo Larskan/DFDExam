@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Running;
 using DFDExam.App.Data;
@@ -17,7 +18,7 @@ public class DatabaseBenchmarks
     private const int UserCount = 10000;
 
     [GlobalSetup]
-    public void Setup()
+    public async Task Setup()
     {
         // SQL Setup
         var config = new ConfigurationBuilder()
@@ -28,21 +29,21 @@ public class DatabaseBenchmarks
 
         _sqlContext = new SqlDbContext(sqlOptions);
         _sqlContext.Users.RemoveRange(_sqlContext.Users); // Clean up before benchmark
-        _sqlContext.SaveChanges();
+        await _sqlContext.SaveChangesAsync();
 
         // MongoDB Setup
         _mongoContext = new MongoContext(
             config["MongoDB:ConnectionString"]!,
             config["MongoDB:Database"]!);
-        _mongoContext.Users.DeleteMany(_ => true);
+        await _mongoContext.Users.DeleteManyAsync(_ => true);
     }
 
     [Benchmark(Description = "SQL Insert 10k Users")]
-    public void BenchmarkSqlInsert()
+    public async Task BenchmarkSqlInsert()
     {
         var users = UserGenerator.GenerateSqlUsers(UserCount);
-        _sqlContext.Users.AddRange(users);
-        _sqlContext.SaveChangesAsync();
+        await _sqlContext.Users.AddRangeAsync(users);
+        await _sqlContext.SaveChangesAsync();
     }
 
     [Benchmark(Description = "MongoDB Insert 10k Users")]
