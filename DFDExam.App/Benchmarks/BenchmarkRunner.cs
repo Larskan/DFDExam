@@ -1,0 +1,68 @@
+using System.Diagnostics;
+using MongoDB.Driver;
+using DFDExam.App.Data;
+using DFDExam.App.Utility;
+using Microsoft.EntityFrameworkCore;
+
+namespace DFDExam.App.Benchmarks;
+
+public class BenchmarkRunner
+{
+    private readonly SqlDbContext _sqlDbContext;
+    private readonly MongoContext _mongoContext;
+
+    public BenchmarkRunner(SqlDbContext sqlDbContext, MongoContext mongoContext)
+    {
+        _sqlDbContext = sqlDbContext;
+        _mongoContext = mongoContext;
+    }
+
+    public async Task RunAsync()
+    {
+        const int userCount = 10000;
+        await WarmUpAsync();
+        await CleanupAsync();
+        Console.WriteLine("Starting benchmarks...\n");
+        await BenchmarkSqlInsert(userCount);
+        await BenchmarkMongoInsert(userCount);
+    }
+
+    private async Task BenchmarkSqlInsert(int count)
+    {
+        var users = UserGenerator.GenerateSqlUsers(count);
+        var stopwatch = Stopwatch.StartNew();
+
+        _sqlDbContext.Users.AddRange(users);
+        await _sqlDbContext.SaveChangesAsync();
+
+        stopwatch.Stop();
+        Console.WriteLine($"SQL Insert: Inserted {count} users in {stopwatch.ElapsedMilliseconds} ms");
+    }
+
+    private async Task BenchmarkMongoInsert(int count)
+    {
+        var users = UserGenerator.GenerateMongoUsers(count);
+        var stopwatch = Stopwatch.StartNew();
+
+        await _mongoContext.Users.InsertManyAsync(users);
+
+        stopwatch.Stop();
+        Console.WriteLine($"MongoDB Insert: Inserted {count} users in {stopwatch.ElapsedMilliseconds} ms");
+    }
+
+    private async Task WarmUpAsync()
+    {
+        // Prevent JIT compilation and cold start effects
+        await _sqlDbContext.Users.Take(1).ToListAsync();
+        await _mongoContext.Users.Find(_ => true).Limit(1).ToListAsync();
+    }
+
+    private async Task CleanupAsync()
+    {
+        // Clean up previous test data
+        _sqlDbContext.Users.RemoveRange(_sqlDbContext.Users);
+        await _sqlDbContext.SaveChangesAsync();
+
+        await _mongoContext.Users.DeleteManyAsync(_ => true);
+    }
+}

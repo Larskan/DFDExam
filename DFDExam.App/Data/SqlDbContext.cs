@@ -14,4 +14,6 @@ public class SqlDbContext : DbContext
         modelBuilder.Entity<SqlUser>().HasIndex(u => u.Email); //Index for fair lookup comparison
         // MongoDB auto indexes the Id field, SQL needs an explicit index for fair comparison
     }
+
+    public DbSet<SqlUser> Users { get; set; } = null!;
 }
