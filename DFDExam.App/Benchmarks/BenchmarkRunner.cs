@@ -10,6 +10,7 @@ public class BenchmarkRunner
 {
     private readonly SqlDbContext _sqlDbContext;
     private readonly MongoContext _mongoContext;
+    const int userCount = 10000;
 
     public BenchmarkRunner(SqlDbContext sqlDbContext, MongoContext mongoContext)
     {
@@ -19,7 +20,6 @@ public class BenchmarkRunner
 
     public async Task RunAsync()
     {
-        const int userCount = 10000;
         await WarmUpAsync();
         await CleanupAsync();
         Console.WriteLine("Starting benchmarks...\n");

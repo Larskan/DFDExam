@@ -49,16 +49,14 @@ public class DatabaseBenchmarks
     [Benchmark(Description = "MongoDB Insert 10k Users")]
     public async Task BenchmarkMongoInsert()
     {
-        // Note: BenchmarkDotNet does not support async benchmarks directly.
-        // This is a workaround to call async method synchronously.
         var users = UserGenerator.GenerateMongoUsers(UserCount);
-        _mongoContext.Users.InsertManyAsync(users).GetAwaiter().GetResult();
+        await _mongoContext.Users.InsertManyAsync(users);
     }
 
     [Benchmark(Description = "SQL Read All Users")]
-    public void SqlReadAll() => _sqlContext.Users.ToList();
+    public async Task SqlReadAll() => await _sqlContext.Users.ToListAsync();
 
     [Benchmark(Description = "MongoDB Read All Users")]
-    public void MongoReadAll() => _mongoContext.Users.Find(_ => true).ToList();
+    public async Task MongoReadAll() => await _mongoContext.Users.Find(_ => true).ToListAsync();
 
 }
