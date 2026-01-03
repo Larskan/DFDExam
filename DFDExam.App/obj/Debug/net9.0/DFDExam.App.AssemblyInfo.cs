@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("DFDExam.App")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+02511db4f745040678f4a69cf3c6444ac67f1da5")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a2c488bd6ad5a3c2e0925c7fdfb61ba75c047d6b")]
 [assembly: System.Reflection.AssemblyProductAttribute("DFDExam.App")]
 [assembly: System.Reflection.AssemblyTitleAttribute("DFDExam.App")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

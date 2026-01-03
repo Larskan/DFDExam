@@ -25,6 +25,8 @@ public class BenchmarkRunner
         Console.WriteLine("Starting benchmarks...\n");
         await BenchmarkSqlInsert(userCount);
         await BenchmarkMongoInsert(userCount);
+        await SqlReadAllUsers();
+        await MongoReadAllUsers();
     }
 
     private async Task BenchmarkSqlInsert(int count)
@@ -48,6 +50,26 @@ public class BenchmarkRunner
 
         stopwatch.Stop();
         Console.WriteLine($"MongoDB Insert: Inserted {count} users in {stopwatch.ElapsedMilliseconds} ms");
+    }
+
+    private async Task SqlReadAllUsers()
+    {
+        var stopwatch = Stopwatch.StartNew();
+
+        var users = await _sqlDbContext.Users.ToListAsync();
+
+        stopwatch.Stop();
+        Console.WriteLine($"SQL Read: Retrieved {users.Count} users in {stopwatch.ElapsedMilliseconds} ms");
+    }
+
+    private async Task MongoReadAllUsers()
+    {
+        var stopwatch = Stopwatch.StartNew();
+
+        var users = await _mongoContext.Users.Find(_ => true).ToListAsync();
+
+        stopwatch.Stop();
+        Console.WriteLine($"MongoDB Read: Retrieved {users.Count} users in {stopwatch.ElapsedMilliseconds} ms");
     }
 
     private async Task WarmUpAsync()

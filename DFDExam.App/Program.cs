@@ -46,5 +46,5 @@ await runner.RunAsync();
 
 #region BenchmarkDotNet Execution
 // Uncomment the following line to run BenchmarkDotNet benchmarks and outcomment the Stopwatch section
-DotNetRunner.Run<DatabaseBenchmarks>();
+// DotNetRunner.Run<DatabaseBenchmarks>();
 #endregion
